@@ -76,7 +76,7 @@ def run(config):
                 with gr.Row():
                     matcher_list = gr.Dropdown(
                         choices=list(matcher_zoo.keys()),
-                        value="disk+lightglue",
+                        value="superpoint+superglue",
                         label="Matching Model",
                         interactive=True,
                     )
@@ -297,11 +297,19 @@ def run(config):
                 ],
                 outputs=[output_wrapped, geometry_result],
             )
-
-    app.queue().launch(share=False)
+    # make the link public
+    app.queue().launch(share=True, server_name="0.0.0.0")
 
 
 if __name__ == "__main__":
+    # Set Hub Path so that WSL and Windows can share models
+    import torch
+    from pathlib import Path
+    dr_hub = Path("/mnt/d/torch_hub").resolve()
+    torch.hub.set_dir(dr_hub.as_posix())
+    print("Set hub path to: ", torch.hub.get_dir())
+    # =========================================
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--config_path",
